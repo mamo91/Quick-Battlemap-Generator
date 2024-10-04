@@ -1,10 +1,5 @@
 function main() {
 
-  let gridScale = canvas.scene.grid.size;
-  let sceneRect = canvas.scene.dimensions.sceneRect;
-  let moduleDirectory = "modules/MapMaker/";
-
-
   function convertRelativePointsToGlobal(anchorPoint, relativePoints) {
     const globalPoints = [];
     const anchorX = anchorPoint[0];
@@ -126,6 +121,14 @@ function main() {
     map.get = (x, y) => {
       if (x < map.length && x >= 0 && y < map[0].length && y >= 0 ) {
         return map[x][y];
+      } else if (x >= 0 && y < map[0].length && y >= 0 ) {
+        return map[map.length-1][y];
+      } else if (x < map.length && y < map[0].length && y >= 0 ) {
+        return map[0][y];
+      } else if (x < map.length && x >= 0 && y >= 0 ) {
+        return map[x][map[0].length-1];
+      } else if (x < map.length && x >= 0 && y < map[0].length) {
+        return map[x][0];
       } else {
         return {x: -1, y: -1, terrain: 'any'};
       }
@@ -237,178 +240,69 @@ function main() {
   // Neighbors in form matching: [north-west, north, north-east, east, west, south-west, south, south-east]
 
   function initializeTerrains(moduleDirectory) {
-    const terrains = {
-      water: {
-        color: "#0000FF",
-        name: "water",
-        textures: new Map(),
-        points: [],
-      },
-      grass: {
-        color: "#00FF00",
-        name: "grass",
-        textures: new Map(),
-        points: []
-      },
-      road: {
-        color: "#A0522D",
-        name: "road",
-        textures: new Map(),
-        points: []
-      },
-      void: {
-        color: "#000000",
-        name: "void",
-        textures: new Map(),
-        points: []
-      }
-    };
-    terrains.water.textures.set('default', moduleDirectory+'tiles/'+'Water_tile.png');
-    terrains.grass.textures.set('default', moduleDirectory+'tiles/'+'Grass_tile.png');
-    terrains.road.textures.set( 'default', moduleDirectory+'tiles/'+'Roads_stone_tile.png');
-    terrains.grass.textures.set([
-      'land', 'land', 'land', 
-      'land',         'land', 
-      'land', 'land', 'land'], moduleDirectory+"tiles/"+"Grass_tile.png");
-    terrains.grass.textures.set([
-      'any',  'water', 'any', 
-      'water',         'land', 
-      'any',   'land', 'land'], moduleDirectory+"tiles/"+"Water_coast_1.png");
-    terrains.grass.textures.set([
-      'any',   'water', 'any', 
-      'land',          'land', 
-      'any',   'land', 'any'], moduleDirectory+"tiles/"+"Water_coast_2.png");
-    terrains.grass.textures.set([
-      'any',   'water', 'any', 
-      'land',          'water', 
-      'land', 'land', 'any'], moduleDirectory+"tiles/"+"Water_coast_3.png");
-    terrains.grass.textures.set([
-      'any',   'land', 'any', 
-      'water',          'land', 
-      'any',   'land', 'any'], moduleDirectory+"tiles/"+"Water_coast_4.png");
-    terrains.grass.textures.set([
-      'any',   'land', 'any', 
-      'land',          'water', 
-      'any',   'land', 'any'], moduleDirectory+"tiles/"+"Water_coast_5.png");
-    terrains.grass.textures.set([
-      'any',   'land', 'land', 
-      'water',          'land', 
-      'any',   'water', 'any'], moduleDirectory+"tiles/"+"Water_coast_6.png");
-    terrains.grass.textures.set([
-      'any',   'land', 'any', 
-      'land',          'land', 
-      'any',   'water', 'any'], moduleDirectory+"tiles/"+"Water_coast_7.png");
-    terrains.grass.textures.set([
-      'land', 'land', 'any', 
-      'land',          'water', 
-      'any',   'water', 'any'], moduleDirectory+"tiles/"+"Water_coast_8.png");
-    terrains.grass.textures.set([
-      'land', 'land', 'land', 
-      'land',          'land', 
-      'land', 'land', 'water'], moduleDirectory+"tiles/"+"Water_coast_9.png");
-    terrains.grass.textures.set([
-      'land', 'land', 'land', 
-      'land',          'land', 
-      'water', 'land', 'land'], moduleDirectory+"tiles/"+"Water_coast_10.png");
-    terrains.grass.textures.set([
-      'land', 'land', 'water', 
-      'land',          'land', 
-      'land', 'land', 'land'], moduleDirectory+"tiles/"+"Water_coast_11.png");
-    terrains.grass.textures.set([
-      'water', 'land', 'land', 
-      'land',          'land', 
-      'land', 'land', 'land'], moduleDirectory+"tiles/"+"Water_coast_12.png");
-    terrains.road.textures.set([
-      'road', 'road', 'road', 
-      'road',         'road', 
-      'road', 'road', 'road'], moduleDirectory+"tiles/"+"Roads_stone_tile.png");
-    terrains.road.textures.set([
-      'any', 'non-road', 'any', 
-      'non-road',         'road', 
-      'any', 'road', 'road'], moduleDirectory+"tiles/"+"Roads_stone_1.png");
-    terrains.road.textures.set([
-      'any', 'non-road', 'any', 
-      'road',         'road', 
-      'any', 'road', 'any'], moduleDirectory+"tiles/"+"Roads_stone_2.png");
-    terrains.road.textures.set([
-      'any', 'non-road', 'any', 
-      'road',         'non-road', 
-      'any', 'road', 'any'], moduleDirectory+"tiles/"+"Roads_stone_3.png");
-    terrains.road.textures.set([
-      'any', 'road', 'any', 
-      'non-road',         'road', 
-      'any', 'road', 'any'], moduleDirectory+"tiles/"+"Roads_stone_4.png");
-    terrains.road.textures.set([
-      'any', 'road', 'any', 
-      'road',         'non-road', 
-      'any', 'road', 'any'], moduleDirectory+"tiles/"+"Roads_stone_5.png");
-    terrains.road.textures.set([
-      'any', 'road', 'any', 
-      'non-road',         'road', 
-      'any', 'non-road', 'any'], moduleDirectory+"tiles/"+"Roads_stone_6.png");
-    terrains.road.textures.set([
-      'any', 'road', 'any', 
-      'road',         'road', 
-      'any', 'non-road', 'any'], moduleDirectory+"tiles/"+"Roads_stone_7.png");
-    terrains.road.textures.set([
-      'any', 'road', 'any', 
-      'road',         'non-road', 
-      'any', 'non-road', 'any'], moduleDirectory+"tiles/"+"Roads_stone_8.png");
-    terrains.road.textures.set([
-      'any', 'non-road', 'any', 
-      'non-road',         'road', 
-      'any', 'non-road', 'any'], moduleDirectory+"tiles/"+"Roads_stone_9.png");
-    terrains.road.textures.set([
-      'any', 'non-road', 'any', 
-      'road',         'road', 
-      'any', 'non-road', 'any'], moduleDirectory+"tiles/"+"Roads_stone_10.png");
-    terrains.road.textures.set([
-      'road', 'non-road', 'road', 
-      'road',         'non-road', 
-      'road', 'non-road', 'road'], moduleDirectory+"tiles/"+"Roads_stone_11.png");
-    terrains.road.textures.set([
-      'road', 'non-road', 'road', 
-      'non-road',         'non-road', 
-      'road', 'road', 'road'], moduleDirectory+"tiles/"+"Roads_stone_12.png");
-    terrains.road.textures.set([
-      'road', 'road', 'road', 
-      'non-road',         'non-road', 
-      'road', 'road', 'road'], moduleDirectory+"tiles/"+"Roads_stone_13.png");
-    terrains.road.textures.set([
-      'road', 'road', 'road', 
-      'non-road',         'non-road', 
-      'road', 'non-road', 'road'], moduleDirectory+"tiles/"+"Roads_stone_14.png");
-    terrains.road.textures.set([
-      'non-road', 'road', 'road', 
-      'road',         'road', 
-      'road', 'road', 'road'], moduleDirectory+"tiles/"+"Roads_stone_15.png");
-    terrains.road.textures.set([
-      'road', 'road', 'non-road', 
-      'road',         'road', 
-      'road', 'road', 'road'], moduleDirectory+"tiles/"+"Roads_stone_16.png");
-    terrains.road.textures.set([
-      'road', 'road', 'road', 
-      'road',         'road', 
-      'non-road', 'road', 'road'], moduleDirectory+"tiles/"+"Roads_stone_17.png");
-    terrains.road.textures.set([
-      'road', 'road', 'road', 
-      'road',         'road', 
-      'road', 'road', 'non-road'], moduleDirectory+"tiles/"+"Roads_stone_18.png");
+    const terrains = await fetchJsonWithTimeout("/modules/Quick-Battlemap-Generator/scripts/decorations.json")
+
     return terrains;
+  }
+
+  function decorate() {
+    addFillerDecorations();
+    addNoticeableDecorations();
+    addInteractiveDecorations();
+    addWalls();
+    addZones();
+  }
+  function addFillerDecorations() {
+    for (var x = grid.length - 1; x >= 0; x--) {
+      for (var y = grid[x].length - 1; y >= 0; y--) {
+        let tile = grid[x][y];
+        let neighbors = [
+          grid.get(x-1, y-1).terrain, grid.get(x, y-1).terrain, grid.get(x+1, y-1).terrain, 
+          grid.get(x-1, y).terrain,   grid.get(x, y).terrain,   grid.get(x+1, y).terrain, 
+          grid.get(x-1, y+1).terrain, grid.get(x, y+1).terrain, grid.get(x+1, y+1).terrain];
+          //TODO: Select from backgrounds, find way to remove/mark tiles after adding one.
+        tile.texture = selectTexture(tile.terrain, neighbors);
+        if (tile.texture === undefined) {
+          console.log(tile.terrain, neighbors);
+        }
+      }
+    }
+  }
+  function addNoticeableDecorations() {
+    // body...
+  }
+  function addInteractiveDecorations() {
+    // body...
+  }
+  function addWalls() {
+    // body...
+  }
+  function addZones() {
+    // body...
   }
 
 
 
+
+  let gridScale = canvas.scene.grid.size;
+  let sceneRect = canvas.scene.dimensions.sceneRect;
+  let moduleDirectory = "modules/Quick-Battlemap-Generator/";
+
   //Initialize the grid to all void
   let grid = initializeGrid(sceneRect, gridScale, sceneRect);
-  let terrains = initializeTerrains(moduleDirectory);
+  // let terrains = initializeTerrains(moduleDirectory);
+  const terrains = await fetchJsonWithTimeout("/modules/Quick-Battlemap-Generator/scripts/terrains.json");
+  const decorations = (await fetchJsonWithTimeout("/modules/Quick-Battlemap-Generator/scripts/decorations.json")).decorations;
   const terrainNames = Object.keys(terrains);
   let terrainComparisonMap = initializeTerrainComparisonMap();
+
   processDrawings(terrains);
   categorizePoints(grid, terrains);
   autotile(grid);
+  decorate();
   newTiles = createTiles(grid, terrains, gridScale);
-  let promise = canvas.scene.createEmbeddedDocuments("Tile",newTiles);
+
+  let promise = canvas.scene.createEmbeddedDocuments("Tile", newTiles);
   return { grid, terrains, terrainNames, terrainComparisonMap, newTiles, promise };
 }
 let result = main();
@@ -416,3 +310,11 @@ result
 
 //TODO: Apparently also create an entire color-picking module for the drawing tool? Or recommend the boneyard one.
 // game.settings.settings.get("core.defaultDrawingConfig");
+
+//TODO: Fix edge autotiling.
+//TODO: Add stone path interior corner custom logic?
+//TODO: Add sugar (cobbles, trees, bushes, grass patterns, wave patterns)
+//TODO: Add interface:
+  //TODO: Create dialogue
+  //TODO: 
+  //TODO: Add color picker for drawing with key to terrains

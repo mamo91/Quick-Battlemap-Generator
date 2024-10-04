@@ -1,0 +1,26 @@
+{
+  "id": "quick-battlemap-generator",
+  "title": "Quick Battlemap Generator",
+  "version": "1.0.0",
+  "compatibility": {
+    "verified": "11"
+  },
+  "relationships": {
+    "recommends": [
+      {
+        "id": "boneyard-drawing-tools",
+        "type": "module",
+        "compatibility": {}
+      }
+    ]
+  },
+  "description": "Creates good-enough battlemaps based off of simple scribbles. Characters pick a fight with a random owlbear? Confront a noble on the road instead of in their castle as you'd planned? Rather than tossing up the same forest path map as always, make a new one, add a river, a bridge, and a fork in the road, all with a few scribbles of the drawing tool.",
+  "authors": [
+    {
+      "name": "Max Leefer",
+      "email": "leefer.max@gmail.com",
+      "flags": {}
+    }
+  ],
+  "url": "https://github.com/mamo91/Quick-Battlemap-Generator"
+}

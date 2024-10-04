@@ -1,0 +1,155 @@
+{
+  "water": {
+    "color": "#0000FF",
+    "name": "water",
+    "textures": ["default", "Water_tile.png"],
+    "points": [],
+  },
+  "grass": {
+    "color": "#00FF00",
+    "name": "grass",
+    "textures": [["default", "Grass_tile.png"], [[
+        "land", "land", "land", 
+        "land",         "land", 
+        "land", "land", "land"], "Grass_tile.png"
+      ], [[
+        "any",  "water", "any", 
+        "water",         "land", 
+        "any",   "land", "land"], "Water_coast_1.png"
+      ], [[
+        "any",   "water", "any", 
+        "land",          "land", 
+        "any",   "land", "any"], "Water_coast_2.png"
+      ], [[
+        "any",   "water", "any", 
+        "land",          "water", 
+        "land", "land", "any"], "Water_coast_3.png"
+      ], [[
+        "any",   "land", "any", 
+        "water",          "land", 
+        "any",   "land", "any"], "Water_coast_4.png"
+      ], [[
+        "any",   "land", "any", 
+        "land",          "water", 
+        "any",   "land", "any"], "Water_coast_5.png"
+      ], [[
+        "any",   "land", "land", 
+        "water",          "land", 
+        "any",   "water", "any"], "Water_coast_6.png"
+      ], [[
+        "any",   "land", "any", 
+        "land",          "land", 
+        "any",   "water", "any"], "Water_coast_7.png"
+      ], [[
+        "land", "land", "any", 
+        "land",          "water", 
+        "any",   "water", "any"], "Water_coast_8.png"
+      ], [[
+        "land", "land", "land", 
+        "land",          "land", 
+        "land", "land", "water"], "Water_coast_9.png"
+      ], [[
+        "land", "land", "land", 
+        "land",          "land", 
+        "water", "land", "land"], "Water_coast_10.png"
+      ], [[
+        "land", "land", "water", 
+        "land",          "land", 
+        "land", "land", "land"], "Water_coast_11.png"
+      ], [[
+        "water", "land", "land", 
+        "land",          "land", 
+        "land", "land", "land"], "Water_coast_12.png"
+      ],
+    ],
+    "points": [],
+  },
+  "road": {
+    "color": "#A0522D",
+    "name": "road",
+    "textures": [["default","Roads_stone_tile.png"], [[
+      "road", "road", "road", 
+      "road",         "road", 
+      "road", "road", "road"], "Roads_stone_tile.png"
+    ], [[
+      "any", "non-road", "any", 
+      "non-road",         "road", 
+      "any", "road", "road"], "Roads_stone_1.png"
+    ], [[
+      "any", "non-road", "any", 
+      "road",         "road", 
+      "any", "road", "any"], "Roads_stone_2.png"
+    ], [[
+      "any", "non-road", "any", 
+      "road",         "non-road", 
+      "any", "road", "any"], "Roads_stone_3.png"
+    ], [[
+      "any", "road", "any", 
+      "non-road",         "road", 
+      "any", "road", "any"], "Roads_stone_4.png"
+    ], [[
+      "any", "road", "any", 
+      "road",         "non-road", 
+      "any", "road", "any"], "Roads_stone_5.png"
+    ], [[
+      "any", "road", "any", 
+      "non-road",         "road", 
+      "any", "non-road", "any"], "Roads_stone_6.png"
+    ], [[
+      "any", "road", "any", 
+      "road",         "road", 
+      "any", "non-road", "any"], "Roads_stone_7.png"
+    ], [[
+      "any", "road", "any", 
+      "road",         "non-road", 
+      "any", "non-road", "any"], "Roads_stone_8.png"
+    ], [[
+      "any", "non-road", "any", 
+      "non-road",         "road", 
+      "any", "non-road", "any"], "Roads_stone_9.png"
+    ], [[
+      "any", "non-road", "any", 
+      "road",         "road", 
+      "any", "non-road", "any"], "Roads_stone_10.png"
+    ], [[
+      "road", "non-road", "road", 
+      "road",         "non-road", 
+      "road", "non-road", "road"], "Roads_stone_11.png"
+    ], [[
+      "road", "non-road", "road", 
+      "non-road",         "non-road", 
+      "road", "road", "road"], "Roads_stone_12.png"
+    ], [[
+      "road", "road", "road", 
+      "non-road",         "non-road", 
+      "road", "road", "road"], "Roads_stone_13.png"
+    ], [[
+      "road", "road", "road", 
+      "non-road",         "non-road", 
+      "road", "non-road", "road"], "Roads_stone_14.png"
+    ], [[
+      "non-road", "road", "road", 
+      "road",         "road", 
+      "road", "road", "road"], "Roads_stone_15.png"
+    ], [[
+      "road", "road", "non-road", 
+      "road",         "road", 
+      "road", "road", "road"], "Roads_stone_16.png"
+    ], [[
+      "road", "road", "road", 
+      "road",         "road", 
+      "non-road", "road", "road"], "Roads_stone_17.png"
+    ], [[
+      "road", "road", "road", 
+      "road",         "road", 
+      "road", "road", "non-road"], "Roads_stone_18.png"
+    ]],
+    "points": []
+  },
+  "void": {
+    "color": "#000000",
+    "name": "void",
+    "textures": ["default", ""],
+    "points": [],
+  }
+}
