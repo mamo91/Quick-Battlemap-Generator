@@ -1,4 +1,4 @@
-function main() {
+async function main() {
 
   function convertRelativePointsToGlobal(anchorPoint, relativePoints) {
     const globalPoints = [];
@@ -49,13 +49,10 @@ function main() {
 
   //categorizes grid points by the nearest drawing points
   function categorizePoints(grid, categories) {
-    const categorizedGrid = new Array(grid.length);
-    for (let i = 0; i < grid.length; i++) {
-      categorizedGrid[i] = new Array(grid[i].length);
-    }
 
-    for (let x = 0; x < grid.length; x++) {
-      for (let y = 0; y < grid[x].length; y++) {
+    // for (let x = 0; x < grid.length; x++) {
+    //   for (let y = 0; y < grid[x].length; y++) {
+    for (let tile of grid) {
         let closestCategory = null;
         let minDistance = Infinity;
         let closestPoints = [];
@@ -63,8 +60,8 @@ function main() {
         for (const tName of terrainNames) {
           let category = terrains[tName];
           for (const point of category.points) {
-            const dx = point[0] - grid[x][y].x;
-            const dy = point[1] - grid[x][y].y;
+            const dx = point[0] - tile.x;
+            const dy = point[1] - tile.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
 
             if (closestPoints.length < 1) {
@@ -96,10 +93,10 @@ function main() {
         }
         averageCategoryDistances.sort((a, b) => a[1]-b[1]);
 
-        grid[x][y].terrain = averageCategoryDistances[0][0];
-        grid[x][y].calculatedDistances = averageCategoryDistances;
-        grid[x][y].closestPoints = closestPoints;
-      }
+        tile.terrain = averageCategoryDistances[0][0];
+        tile.calculatedDistances = averageCategoryDistances;
+        tile.closestPoints = closestPoints;
+      // }
     }
     return grid;
   }
@@ -108,13 +105,17 @@ function main() {
   function initializeGrid(sceneRect, gridScale, sceneRect) {
     //Initialize the grid to all void
     let map = new Array(Math.ceil(sceneRect.width/gridScale));
+    map.scale = gridScale;
     for (let i = 0; i < Math.ceil(sceneRect.width/gridScale); i += 1) {
       map[i] = new Array(Math.ceil(sceneRect.height/gridScale));
       for (let j = 0; j < Math.ceil(sceneRect.height/gridScale); j += 1) {
         map[i][j] = {
           x: sceneRect.x+(i*gridScale), 
           y: sceneRect.y+(j*gridScale), 
-          terrain: "void"
+          xIndex: i,
+          yIndex: j,
+          terrain: "void",
+          decorations: []
         };
       }
     }
@@ -130,9 +131,16 @@ function main() {
       } else if (x < map.length && x >= 0 && y < map[0].length) {
         return map[x][0];
       } else {
-        return {x: -1, y: -1, terrain: 'any'};
+        return {x: -1, y: -1, terrain: 'any', decorations: []};
       }
     }
+    map[Symbol.iterator] = function* () {
+      for (let x = 0; x < map.length; x++) {
+        for (let y = 0; y < map[x].length; y++) {
+          yield map[x][y];
+        }
+      }
+    };
     return map;
   }
 
@@ -143,40 +151,51 @@ function main() {
       let points = convertRelativePointsToGlobal([d.children[i].shape.data.x, d.children[i].shape.data.y], d.children[i].shape.data.shape.points);
       let globalPoints = points.map(point => canvas.grid.getTopLeft(point[0], point[1] ));
       let drawingTerrain = terrainFromColor(d.children[i].document.strokeColor);
-      // console.log(drawingTerrain.color + " from " + d.children[i].document.strokeColor)
-      console.log(drawingTerrain);
+      // console.log(drawingTerrain);
       terrains[drawingTerrain].points.push(...globalPoints);
     }
   }
   // TODO: Add some intermediate points if the bezier points are too far apart
 
   // create tiles based on the map
-  function createTiles(map, terrains, gridScale) {
+  function createTiles(map) {
     let newTiles = [];
-    for (let x = 0; x < map.length; x++) {
-      for (let y = 0; y < map[x].length; y++) {
+    for (let tile of grid) {
         let newTile = {};
-        newTile.x = map[x][y].x;
-        newTile.y = map[x][y].y;
+        newTile.x = tile.x;
+        newTile.y = tile.y;
         newTile.texture = {};
-        newTile.texture.src = map[x][y].texture;
-        // newTile.texture.tint = "#690069";
-        newTile.width = gridScale;
-        newTile.height = gridScale;
+        newTile.texture.src = moduleDirectory + "images/tiles/" + tile.texture;
+        newTile.width = map.scale;
+        newTile.height = map.scale;
+        newTile.zIndex = 100;
         newTiles.push(newTile);
-      }
+
+        let decorationZIndex = 101;
+        for (decoration of tile.decorations) {
+          let newTile = {};
+          newTile.x = tile.x;
+          newTile.y = tile.y;
+          newTile.texture = {};
+          newTile.texture.src = moduleDirectory + "images/decorations/" + decoration.texture[Math.floor(Math.random() * decoration.texture.length)];
+          newTile.width = map.scale * decoration.width;
+          newTile.height = map.scale * decoration.height;
+          newTile.zIndex = decorationZIndex;
+          newTiles.push(newTile);
+          decorationZIndex += 1;
+        }
     }
     return newTiles;
   }
 
-
-
-
-
-
   //fuzzily compares terrains based on the terrainComparisonMap
   function compareTerrainNames(terrain1, terrain2) {
-    // console.log(terrain1, terrain2);
+    if (typeof(terrain1) != 'string') {
+      terrain1 = terrain1.terrain;
+    }
+    if (typeof(terrain2) != 'string') {
+      terrain2 = terrain2.terrain;
+    }
     if (terrainComparisonMap.has(terrain1)) {
       return terrainComparisonMap.get(terrain1).includes(terrain2);
     }
@@ -190,7 +209,8 @@ function main() {
   function compareNeighbors(neighbors1, neighbors2) {
     let ret = true;
     for (var i = neighbors1.length - 1; i >= 0; i--) {
-      if (!compareTerrainNames(neighbors1[i], neighbors2[i])) {
+      let c = !compareTerrainNames(neighbors1[i], neighbors2[i]);
+      if (c) {
         return false;
       }
     }
@@ -203,25 +223,26 @@ function main() {
     terrainComparisonMap.set('land', ['grass', 'road']);
     for (terrain of terrainNames) {
       terrainComparisonMap.set('non-'+terrain, terrainNames.toSpliced(terrainNames.indexOf(terrain), 1));
-
     }
     return terrainComparisonMap;
   }
 
   // add the appropriate textures to the grid based on corners.
   function autotile(grid) {
-    for (var x = grid.length - 1; x >= 0; x--) {
-      for (var y = grid[x].length - 1; y >= 0; y--) {
-        let tile = grid[x][y];
-        let neighbors = [
-          grid.get(x-1, y-1).terrain, grid.get(x, y-1).terrain, grid.get(x+1, y-1).terrain, 
-          grid.get(x-1, y).terrain,                         grid.get(x+1, y).terrain, 
-          grid.get(x-1, y+1).terrain, grid.get(x, y+1).terrain, grid.get(x+1, y+1).terrain];
+    // for (var x = grid.length - 1; x >= 0; x--) {
+    //   for (var y = grid[x].length - 1; y >= 0; y--) {
+    for (let tile of grid) {
+        // let tile = grid[x][y];
+        let neighbors = getRegion(grid, tile.xIndex-1, tile.yIndex-1, 3, 3);
+        neighbors.splice(4, 1);
+          // grid.get(x-1, y-1).terrain, grid.get(x, y-1).terrain, grid.get(x+1, y-1).terrain, 
+          // grid.get(x-1, y).terrain,                         grid.get(x+1, y).terrain, 
+          // grid.get(x-1, y+1).terrain, grid.get(x, y+1).terrain, grid.get(x+1, y+1).terrain];
         tile.texture = selectTexture(tile.terrain, neighbors);
         if (tile.texture === undefined) {
           console.log(tile.terrain, neighbors);
         }
-      }
+      // }
     }
     return grid; //unneeded
   }
@@ -230,22 +251,32 @@ function main() {
   function selectTexture(tile, neighbors) {
     for (let match of terrains[tile].textures) {
       if (match[0] != 'default' && compareNeighbors( match[0], neighbors)) {
-        return terrains[tile].textures.get(match[0]);
+        // if (!terrains[tile.terrain]) {
+        //   console.log(tile);
+        // }
+        return match[1];
         // return match[0];
       }
     }
-    return terrains[tile].textures.get('default')
+    return terrains[tile].textures[0][1];
   }
 
   // Neighbors in form matching: [north-west, north, north-east, east, west, south-west, south, south-east]
 
-  function initializeTerrains(moduleDirectory) {
-    const terrains = await fetchJsonWithTimeout("/modules/Quick-Battlemap-Generator/scripts/decorations.json")
+  // function initializeTerrains(moduleDirectory) {
+  //   const terrains = await fetchJsonWithTimeout("/modules/Quick-Battlemap-Generator/scripts/decorations.json")
 
-    return terrains;
-  }
+  //   return terrains;
+  // }
 
   function decorate() {
+    let decorationResults = {
+      filler: [],
+      noticeable: [],
+      interactive: [],
+      walls: [],
+      zones: []
+    }
     addFillerDecorations();
     addNoticeableDecorations();
     addInteractiveDecorations();
@@ -253,20 +284,48 @@ function main() {
     addZones();
   }
   function addFillerDecorations() {
-    for (var x = grid.length - 1; x >= 0; x--) {
-      for (var y = grid[x].length - 1; y >= 0; y--) {
-        let tile = grid[x][y];
-        let neighbors = [
-          grid.get(x-1, y-1).terrain, grid.get(x, y-1).terrain, grid.get(x+1, y-1).terrain, 
-          grid.get(x-1, y).terrain,   grid.get(x, y).terrain,   grid.get(x+1, y).terrain, 
-          grid.get(x-1, y+1).terrain, grid.get(x, y+1).terrain, grid.get(x+1, y+1).terrain];
-          //TODO: Select from backgrounds, find way to remove/mark tiles after adding one.
-        tile.texture = selectTexture(tile.terrain, neighbors);
-        if (tile.texture === undefined) {
-          console.log(tile.terrain, neighbors);
+    // for (var x = grid.length - 1; x >= 0; x--) {
+    //   for (var y = grid[x].length - 1; y >= 0; y--) {
+    for (let tile of grid) {
+        // let tile = grid[x][y];
+        let neighbors = getRegion(grid, tile.xIndex-1, tile.yIndex-1, 3, 3);
+        // reduce decorations to only ones that satisfy the rule
+        let matchingDecorations = decorations.filter((decoration) => compareNeighbors( decoration.rule, neighbors));
+        // if (tile.terrain == 'water' && mat) {
+
+        // console.log(decorations);
+        // }
+        // pick a random number
+
+        let choice = Math.random();
+        // for each in the list of decorations, compare to frequency
+        for (decoration of matchingDecorations) {
+          if (choice < decoration.frequency) { //maybe add some check about the total being too high? Naaah
+            // if less select that decoration
+            choice = decoration;
+            break;
+          } else {
+            // if more, subtract frequency and try the next one
+            choice -= decoration.frequency;
+          }
         }
+        // if no more decorations, leave blank.
+        if (typeof(choice) === 'object') {
+          tile.decorations.push(choice);
+        }
+      // }
+    }
+  }
+  // uses .get to retrieve the elements of a region of a 2d grid in reading order (left to right, then top to bottom).
+  //x, y, top left point, width, height, self explanatory.
+  function getRegion(grid, x, y, width, height) {
+    let region = [];
+    for (var i = 0; i < height; i++) { //x=j, y=i to get reading order
+      for (var j = 0; j < width; j++) {
+        region.push(grid.get(x+j, y+i));
       }
     }
+    return region;
   }
   function addNoticeableDecorations() {
     // body...
@@ -286,13 +345,13 @@ function main() {
 
   let gridScale = canvas.scene.grid.size;
   let sceneRect = canvas.scene.dimensions.sceneRect;
-  let moduleDirectory = "modules/Quick-Battlemap-Generator/";
+  let moduleDirectory = "modules/quick-battlemap-generator/";
 
   //Initialize the grid to all void
   let grid = initializeGrid(sceneRect, gridScale, sceneRect);
   // let terrains = initializeTerrains(moduleDirectory);
-  const terrains = await fetchJsonWithTimeout("/modules/Quick-Battlemap-Generator/scripts/terrains.json");
-  const decorations = (await fetchJsonWithTimeout("/modules/Quick-Battlemap-Generator/scripts/decorations.json")).decorations;
+  const terrains = await fetchJsonWithTimeout("/modules/quick-battlemap-generator/scripts/terrains.json");
+  const decorations = (await fetchJsonWithTimeout("/modules/quick-battlemap-generator/scripts/decorations.json")).decorations;
   const terrainNames = Object.keys(terrains);
   let terrainComparisonMap = initializeTerrainComparisonMap();
 
@@ -300,7 +359,8 @@ function main() {
   categorizePoints(grid, terrains);
   autotile(grid);
   decorate();
-  newTiles = createTiles(grid, terrains, gridScale);
+  newTiles = createTiles(grid);
+
 
   let promise = canvas.scene.createEmbeddedDocuments("Tile", newTiles);
   return { grid, terrains, terrainNames, terrainComparisonMap, newTiles, promise };

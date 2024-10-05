@@ -8,7 +8,9 @@
         "any", "grass", "any"
       ], 
       "texture": ["Bush.png"], 
-      "frequency": 0.02
+      "frequency": 0.02,
+      "width": 1,
+      "height": 1
     }, {
       "name": "flower",
       "rule": [
@@ -19,7 +21,9 @@
       "texture": ["Flower_1.png", "Flower_2.png", "Flower_3.png", 
                   "Flower_4.png", "Flower_5.png", "Flower_6.png", 
                   "Flower_7.png", "Flower_8.png", "Flower_9.png"],
-      "frequency": 0.05
+      "frequency": 0.05,
+      "width": 1,
+      "height": 1
     }, {
       "name": "leaves",
       "rule": [
@@ -28,7 +32,9 @@
         "any", "grass", "any"
       ], 
       "texture": ["Leaves_1.png", "Leaves_2.png", "Leaves_3.png", "Leaves_4.png"],
-      "frequency": 0.03
+      "frequency": 0.03,
+      "width": 1,
+      "height": 1
     }, {
       "name": "small rock",
       "rule": [
@@ -37,7 +43,9 @@
         "any", "grass", "any"
       ], 
       "texture": ["Rock_1.png", "Rock_2.png"],
-      "frequency": 0.005
+      "frequency": 0.005,
+      "width": 1,
+      "height": 1
     }, {
       "name": "big rock",
       "rule": [
@@ -46,7 +54,9 @@
         "any", "grass", "any"
       ], 
       "texture": ["Rock_3.png", "Rock_4.png"],
-      "frequency": 0.002
+      "frequency": 0.002,
+      "width": 1,
+      "height": 1
     }, {
       "name": "stone tile",
       "rule": [
@@ -55,7 +65,9 @@
         "any", "non-water", "any"
       ], 
       "texture": ["Stone tile.png"], 
-      "frequency": 0.1
+      "frequency": 0.01,
+      "width": 1,
+      "height": 1
     }, {
       "name": "tall grass",
       "rule": [
@@ -64,7 +76,9 @@
         "any", "grass", "any"
       ], 
       "texture": ["Tall grass.png"], 
-      "frequency": 0.01
+      "frequency": 0.01,
+      "width": 1,
+      "height": 1
     }, {
       "name": "stump",
       "rule": [
@@ -73,7 +87,9 @@
         "any", "grass", "any"
       ], 
       "texture": ["Tree stump.png"], 
-      "frequency": 0.005
+      "frequency": 0.005,
+      "width": 1,
+      "height": 1
     }, {
       "name": "logs",
       "rule": [
@@ -82,7 +98,9 @@
         "any", "grass", "any"
       ], 
       "texture": ["Wooden logs.png"], 
-      "frequency": 0.0001
+      "frequency": 0.0001,
+      "width": 1,
+      "height": 1
     }
   ]
 }

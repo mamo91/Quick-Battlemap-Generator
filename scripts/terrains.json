@@ -2,8 +2,8 @@
   "water": {
     "color": "#0000FF",
     "name": "water",
-    "textures": ["default", "Water_tile.png"],
-    "points": [],
+    "textures": [["default", "Water_tile.png"]],
+    "points": []
   },
   "grass": {
     "color": "#00FF00",
@@ -60,9 +60,9 @@
         "water", "land", "land", 
         "land",          "land", 
         "land", "land", "land"], "Water_coast_12.png"
-      ],
+      ]
     ],
-    "points": [],
+    "points": []
   },
   "road": {
     "color": "#A0522D",
@@ -149,7 +149,7 @@
   "void": {
     "color": "#000000",
     "name": "void",
-    "textures": ["default", ""],
-    "points": [],
+    "textures": [["default", ""]],
+    "points": []
   }
 }
